@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>E7 Nemesis</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital@1&display=swap" rel="stylesheet">
+
+  <style>
+    body{
+    
+      background-color: #38393a;
+      color: aliceblue;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    a {
+  color: inherit; /* blue colors for links too */
+
+   }
+ 
+    ul {
+    list-style-type: none;
+
+}
+    .imgIcon {
+      width: 80px;
+      max-width: 100%; 
+    }
+
+     .list{  
+  padding: 1px;
+  margin: 5px;
+  border: white solid 1px;
+  border-radius: 20px;
+  font-size: calc(0.5vw + 0.5vh + 1vmin);
+  background-color: #212324;
+
+  align-content: center;
+
+      }
+     .container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #292A2B;
+      }
+     
+    .procura {
+  border-radius: 5px;
+  background-color: #292A2B;
+  padding: 20px;
+}
+
+input[type=text], input[type=password], select {
+  width: 25%;
+  padding: 10px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #535658;
+  color: #ccc;
+}
+
+  .button {
+	box-shadow:inset 0px 1px 3px 0px #91b8b3;
+	background:linear-gradient(to bottom, #768d87 5%, #6c7c7c 100%);
+	background-color:#768d87;
+	border-radius:5px;
+	border:1px solid #566963;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:11px 15px;
+	text-decoration:none;
+	text-shadow:0px -1px 0px #2b665e;
+}
+.button:hover {
+	background:linear-gradient(to bottom, #6c7c7c 5%, #768d87 100%);
+	background-color:#6c7c7c;
+}
+.button:active {
+	position:relative;
+	top:1px;
+}
+  </style>
+
+<script>
+ 
+ 
+ nemesis = [];
+ $( document ).ready(function() {
+  
+  // Loading
+   urlParams = new URLSearchParams(window.location.search);
+   if(urlParams.has('savedlist')) {
+   getUserHeroesURL(urlParams.get('savedlist'));
+   localStorage.setItem("nemesis", JSON.stringify(nemesis));
+   window.history.pushState("", "", window.location.pathname);
+    }else {
+    nemesis = JSON.parse(localStorage.getItem("nemesis")) || [];
+  }
+  
+   if(nemesis) {
+    // console.log("# of users: " + users.length);
+    nemesis.forEach(function(nemesis, index) {
+      availableTags.push(nemesis.username);  
+     $( "#lista" ).prepend( ' <li class="list" id="'+nemesis.username+'"> <h4>'+nemesis.username+'</h4> <h5>('+nemesis.comment+')</h5> <img class="imgIcon" id="theImg" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+nemesis.draft[0]+'_s.png"  onerror="this.style.display=\'none\'" />  <img class="imgIcon" id="theImg" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+nemesis.draft[1]+'_s.png" onerror="this.style.display=\'none\'" />   <img class="imgIcon" id="theImg" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+nemesis.draft[2]+'_s.png" onerror="this.style.display=\'none\'" />  <img class="imgIcon" id="theImg" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+nemesis.draft[3]+'_s.png" onerror="this.style.display=\'none\'" />  <img class="imgIcon" id="theImg" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+nemesis.draft[4]+'_s.png" onerror="this.style.display=\'none\'" />   </li>' );
+        });
+      }
+
+            });
+
+ availableTags = []; 
+ draftIds = [];       
+    
+  function cadastrar(){
+
+    if($("#username").val()) {
+        
+        if(draftIds.length == 0) {
+          alert("You need at leat one hero to add.");
+          return false;
+        }
+
+        if(nemesis.length > 0) {
+        //Check if exist and delete it.
+        nemesis.forEach(function(nm, index) {
+          if(nm.username == $("#username").val()) {
+            nemesis.splice(index, 1);
+            const indexTag = availableTags.indexOf($("#username").val());
+            availableTags.splice(indexTag, 1);
+            $( "#"+ $("#username").val()).remove();
+          }
+        });
+      }
+         
+        availableTags.push($("#username").val());   
+        id = Math.floor(Math.random() * 1000000);
+
+        if($("#comment").val().length > 0) {
+          comment = $("#comment").val();
+        }else {
+          comment = "No comment"
+        }
+   
+    var nm = {
+      id: id,
+      username: $("#username").val(),
+      comment: $("#comment").val(),
+      draft:draftIds
+    };
+
+    // Saving
+  nemesis.push(nm); 	
+  localStorage.setItem("nemesis", JSON.stringify(nemesis));
+  
+             
+       
+          $( "#lista" ).prepend( ' <li class="list" id="'+$("#username").val()+'"> <h4>'+$("#username").val()+'</h4> <h5>('+comment+')</h5>  <img class="imgIcon" id="theImg" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+draftIds[0]+'_s.png" onerror="this.style.display=\'none\'" />  <img class="imgIcon" id="theImg" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+draftIds[1]+'_s.png" onerror="this.style.display=\'none\'" /> <img class="imgIcon" id="theImg" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+draftIds[2]+'_s.png" onerror="this.style.display=\'none\'" /> <img class="imgIcon" id="theImg" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+draftIds[3]+'_s.png"  onerror="this.style.display=\'none\'" /> <img class="imgIcon" id="theImg" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+draftIds[4]+'_s.png" onerror="this.style.display=\'none\'" />  </li>' );
+   
+            draftIds = [];
+            $("#draft").empty();
+
+                     alert("Added to the list!");
+     
+                    }else{
+                        alert("Blank Nickname!");
+                    }
+}
+
+function go() {
+  $(".list").hide();             
+    $("#"+$("#tags").val()).show();
+}
+
+  $( function() {
+
+    
+    $( "#tags" ).autocomplete({
+      source: availableTags
+    });
+    
+     
+    $( "#link" ).autocomplete({
+      source: function (request, response) {
+         $.ajax({
+             url: "jsonlist.json",
+             type: "GET",
+             data: {
+                    term: request.term,
+                },
+             dataType: "json",
+             success: function (data) {
+              var array = $.map(data, function (el) {
+                     return {
+                         label: el.name,
+                         value: el.id,
+                      
+                     }
+                 });
+                 //call the filter here
+                 response($.ui.autocomplete.filter(array, request.term));
+             }
+         });
+    },
+    select: function (event, ui) {
+        // Prevent value from being put in the input:
+        this.value = ui.item.label;
+        ;
+        // Set the next input's value to the "value" of the item.
+        if(draftIds.length > 4) {
+          alert("The draft cannot have more than 5 heroes!");
+          $("#link").val("");
+          return false;
+        }
+        var check = draftIds.includes(ui.item.value);
+        if (check == true) {
+          alert("Heroe already in the list!");
+          $("#link").val("");
+          return false;
+        }
+        draftIds.push(ui.item.value);
+        $("#draft").prepend('<img id="img-'+ui.item.value+'" src="https://cdn.glitch.com/6c14ca82-3bcb-4fd6-afa7-815b95e04a14%2F'+ui.item.value+'_s.png"  onclick="rfList(\''+ui.item.value+'\');" />')     
+        $("#link").val("");
+        event.preventDefault();
+    },
+    minLength: 0
+          });
+
+
+
+    $( "#tags" ).change(function() {
+        $(".list").hide();             
+        $("#"+$( this ).val()).show();
+
+        go();
+
+       if($( this ).val().length == 0)
+       $(".list").show();
+
+});
+
+  } );
+
+
+function showList( ) {
+  var x = document.getElementById("lista");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+ 
+function generateUrl() {
+    var baseURL = window.location.origin;
+    var encodeRoster = btoa(JSON.stringify(Object(nemesis)));
+    var copy = baseURL + window.location.pathname + "?savedlist=" + encodeRoster;
+    $('#listurl').val(copy);
+    $( "#savedlist" ).show();
+   };
+
+   function getUserHeroesURL(e) {    
+   nemesis = JSON.parse(atob(e));
+        }
+
+
+        function rfList(id) {  
+        var remove = draftIds.indexOf(id); 
+        var removed = draftIds.splice(remove,  1);
+        $("#img-"+id).remove();
+
+      }
+
+ 
+
+  </script>
+</head>
+<body>
+
+ 
+<div class="container">
+<div class="procura">
+    <h1> <img src="images/bike.png">E7 Nemesis</h1>
+    <h4> E7 Nemesis is a tool for RTA players to save past enemy drafts!</h4>
+   
+<h2><img src="images/icon2.png"> Register</h2>
+<div class="ui-widget">
+ 
+  <label for="username">Nickname: </label>
+  <input id="username" name="username" type="text">
+
+  <label for="link">Draft:  </label>
+  <input id="link" name="link" type="text">
+  <br>
+
+<label for="comment">Comment: </label>
+<input id="comment" name="comment" type="text" style="padding: .5em 1em; width: 100%;">
+<div id="draft">    </div>
+  
+  
+  <input class="button" type="submit" value=" Register " onclick="cadastrar('');"> 
+
+</div>
+
+<h2><img src="images/icon1.png"> Filter list</h2>
+<div class="ui-widget">
+  <label for="tags">Nickname: </label>
+  <input id="tags" name="tags" type="text">
+  <input class="button" type="submit" value=" Go " onclick="go('');">
+
+  <br>
+<div id="savedlist" style="display: none;">
+<label for="tags">Link to your list: </label>
+<input id="listurl" name="listurl" type="text" style="padding: .5em 1em; width: 100%;">
+</div>
+
+</div>
+
+<button class="button" onclick="showList();">Show/Hide list</button>
+
+<button class="button" onclick="generateUrl();">Save list</button>
+
+
+<ul id="lista">
+  
+</ul>
+</div>
+ 
+</div>
+
+</body>
+</html>
